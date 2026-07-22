@@ -7,5 +7,6 @@
 
 pub mod proc;
 pub mod task;
+pub mod vmm;
 pub mod vsock;
 pub mod workspace;
