@@ -8,8 +8,10 @@
 pub mod grade;
 pub mod proc;
 pub mod task;
+pub mod trial;
 pub mod vmm;
 pub mod vsock;
 pub mod workspace;
 
 pub use grade::Outcome;
+pub use trial::{Agent, Config, TrialResult};
