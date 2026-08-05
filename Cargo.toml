@@ -3,6 +3,11 @@ name = "floe-core"
 version = "0.1.0"
 edition = "2021"
 
+[lib]
+name = "floe_core"
+# cdylib for the Python extension module, rlib so the bin target can link it.
+crate-type = ["cdylib", "rlib"]
+
 [[bin]]
 name = "floe"
 path = "src/main.rs"
@@ -13,3 +18,13 @@ libc = "0.2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 toml = "0.8"
+# Optional: `extension-module` tells pyo3 not to link libpython, which is right
+# for the cdylib but would break the bin target. Gating it keeps both buildable.
+pyo3 = { version = "0.23", features = ["extension-module"], optional = true }
+
+[features]
+default = []
+python = ["dep:pyo3"]
+
+[profile.release]
+opt-level = 2

@@ -1,0 +1,32 @@
+[build-system]
+requires = ["maturin>=1.5,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "floe"
+version = "0.1.0"
+description = "VM-backed harness for Linux kernel agent tasks (virtme-ng + Claude)"
+requires-python = ">=3.9"
+classifiers = ["Programming Language :: Rust"]
+
+[project.scripts]
+floe = "floe.cli:main"
+
+[tool.maturin]
+# The core is a Rust extension module living inside the `floe` package;
+# everything user-facing is the Python alongside it.
+module-name = "floe._core"
+python-source = "python"
+features = ["python"]
+
+[tool.uv]
+# uv keys its build cache on pyproject.toml by default, so an edit to the Rust
+# core would not trigger a rebuild and `uv run` would silently use a stale
+# extension module. Including the crate in the key makes `uv sync` rebuild
+# whenever the core changes.
+cache-keys = [
+    { file = "pyproject.toml" },
+    { file = "Cargo.toml" },
+    { file = "Cargo.lock" },
+    { file = "src/**/*.rs" },
+]
