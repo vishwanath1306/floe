@@ -1,4 +1,8 @@
 /target
 /kernel-src
 /runs
+/rootfs
 /.ccache
+/.venv
+*.so
+__pycache__/
