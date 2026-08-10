@@ -1,0 +1,21 @@
+diff --git a/kernel/sysctl.c b/kernel/sysctl.c
+index 79e6cb1d5c48..b4c73dcf4cf6 100644
+--- a/kernel/sysctl.c
++++ b/kernel/sysctl.c
+@@ -1610,7 +1610,16 @@ int proc_do_static_key(const struct ctl_table *table, int write,
+ 	return ret;
+ }
+ 
++static int floe_probe = 42;
++
+ static struct ctl_table kern_table[] = {
++	{
++		.procname	= "floe_probe",
++		.data		= &floe_probe,
++		.maxlen		= sizeof(int),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec,
++	},
+ 	{
+ 		.procname	= "panic",
+ 		.data		= &panic_timeout,

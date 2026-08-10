@@ -1,0 +1,31 @@
+schema_version = "1.4"
+
+[task]
+name = "floe/sysctl-probe"
+version = "1.0.0"
+authors = []
+keywords = ["kernel", "sysctl", "build-and-boot"]
+
+[metadata]
+difficulty = "medium"
+category = "kernel"
+tags = ["kernel", "sysctl", "req2-build-and-boot"]
+
+# floe-specific. Harbor's [environment] block is a Dockerfile build context;
+# a kernel task's environment identity is (base tree, kconfig, toolchain)
+# instead, so it gets its own section rather than being forced into that shape.
+[kernel]
+base_ref = "v6.12"
+skip_modules = true
+# Build parallelism is vng's call (it uses every host CPU), not a task knob.
+guest_cpus = 4
+guest_memory = "2G"
+
+[build]
+timeout_sec = 3600
+
+[agent]
+timeout_sec = 1800
+
+[verifier]
+timeout_sec = 300
