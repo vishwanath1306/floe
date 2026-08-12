@@ -13,7 +13,7 @@ uv run floe <command> [args]      # python
 Run one trial: mutate a worktree, build the kernel, boot it, grade it.
 
 ```
-floe run <task-dir> [--agent claude|solution|none] [--keep] [--json]
+floe run <task-dir> [--agent claude|muse|solution|none] [--keep] [--json]
 ```
 
 | Argument | Default | Meaning |
@@ -27,7 +27,8 @@ floe run <task-dir> [--agent claude|solution|none] [--keep] [--json]
 
 | Value | Does |
 |---|---|
-| `claude` | Headless Claude Code in the worktree |
+| `claude` | Headless Claude Code (`claude -p`) in the worktree |
+| `muse` | Headless Muse Code (`muse exec`) in the worktree |
 | `solution` | Applies the task's `solution/solve.patch` (or `solve.sh`). No tokens spent. Aliases: `oracle` |
 | `none` | Changes nothing. A correct task must **not** pass this. Aliases: `nop` |
 

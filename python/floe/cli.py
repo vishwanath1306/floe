@@ -111,8 +111,8 @@ def main(argv: list[str] | None = None) -> int:
     run_p.add_argument(
         "--agent",
         default="claude",
-        choices=["claude", "solution", "oracle", "none", "nop"],
-        metavar="{claude,solution,none}",
+        choices=["claude", "muse", "solution", "oracle", "none", "nop"],
+        metavar="{claude,muse,solution,none}",
         help="what mutates the workspace (default: claude); "
         "solution=oracle, none=nop",
     )

@@ -17,6 +17,8 @@ use crate::workspace::Workspace;
 pub enum Agent {
     /// Headless Claude Code.
     Claude,
+    /// Headless Muse Code.
+    Muse,
     /// The task's reference patch -- exercises the harness without spending
     /// tokens, and proves a task is solvable before an agent ever sees it.
     Solution,
@@ -28,15 +30,17 @@ impl Agent {
     pub fn parse(s: &str) -> Result<Self> {
         match s {
             "claude" => Ok(Agent::Claude),
+            "muse" => Ok(Agent::Muse),
             "solution" | "oracle" => Ok(Agent::Solution),
             "none" | "nop" => Ok(Agent::None),
-            other => anyhow::bail!("unknown agent {other:?} (claude|solution|none)"),
+            other => anyhow::bail!("unknown agent {other:?} (claude|muse|solution|none)"),
         }
     }
 
     pub fn as_str(&self) -> &'static str {
         match self {
             Agent::Claude => "claude",
+            Agent::Muse => "muse",
             Agent::Solution => "solution",
             Agent::None => "none",
         }
@@ -199,6 +203,18 @@ fn run_agent(task: &Task, agent: Agent, ws: &Path, run_dir: &Path) -> Result<f64
             task.instruction.clone(),
             "--permission-mode".into(),
             "bypassPermissions".into(),
+        ],
+        // The agent is only ever an argv, which is what makes comparing
+        // harnesses on identical tasks cheap: same tree, same build, same
+        // grading, only the thing editing the source changes.
+        Agent::Muse => vec![
+            "muse".into(),
+            "exec".into(),
+            // floe already created the worktree; Muse making its own inside
+            // it would put the agent's edits somewhere the build never sees.
+            "--worktree".into(),
+            "off".into(),
+            task.instruction.clone(),
         ],
     };
 

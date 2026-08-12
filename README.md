@@ -92,8 +92,13 @@ misconfigured harness could boot the host kernel and let a no-op agent pass.
 Both mutations may be a `.patch` (applied with `git apply`, preferred) or a
 `.sh`. A patch has no escaping layer between you and the edit.
 
-Three agents: `claude` runs headless Claude Code, `solution` applies the
-oracle, and `none` changes nothing — a correct task must not pass `none`.
+Agents: `claude` and `muse` run the respective coding harnesses headless,
+`solution` applies the oracle, and `none` changes nothing — a correct task must
+not pass `none`.
+
+An agent is only an argv, so adding a harness is a few lines. Since the tree,
+the build and the grading are identical across them, the same task compares
+harnesses directly.
 
 ## Task format
 
