@@ -1,0 +1,15 @@
+diff --git a/init/main.c b/init/main.c
+index 351d5002b50e..338abfd7c7a0 100644
+--- a/init/main.c
++++ b/init/main.c
+@@ -1620,8 +1620,9 @@ static struct floe_state *floe_lookup_state(void)
+ static int __init floe_selftest_init(void)
+ {
+ 	struct floe_state *st = floe_lookup_state();
++	int version = st ? st->version : 1;
+ 
+-	pr_info("floe: selftest ok, version %d\n", st->version);
++	pr_info("floe: selftest ok, version %d\n", version);
+ 	return 0;
+ }
+ late_initcall(floe_selftest_init);

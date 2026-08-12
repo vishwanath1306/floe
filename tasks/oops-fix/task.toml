@@ -1,0 +1,27 @@
+schema_version = "1.4"
+
+[task]
+name = "floe/oops-fix"
+version = "1.0.0"
+authors = []
+keywords = ["kernel", "debugging", "oops"]
+
+[metadata]
+difficulty = "medium"
+category = "kernel"
+tags = ["kernel", "bugfix", "null-deref", "initcall"]
+
+[kernel]
+base_ref = "v6.12"
+skip_modules = true
+guest_cpus = 4
+guest_memory = "2G"
+
+[build]
+timeout_sec = 3600
+
+[agent]
+timeout_sec = 1800
+
+[verifier]
+timeout_sec = 300
