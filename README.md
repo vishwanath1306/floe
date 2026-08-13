@@ -41,9 +41,14 @@ scoreable:
 | `FAIL_PANIC` | `Kernel panic - not syncing` on the console |
 | `FAIL_OOPS` | Oops, `BUG:`, or `WARNING: CPU:` on the console |
 | `FAIL_HANG` | Never finished, and printed no fault |
+| `FAIL_STYLE` | Booted and passed, but exceeded a style limit the task set |
 
 Console evidence outranks the guest's own result, so a kernel that faults but
 still passes `verify.sh` does not pass.
+
+Every run also reports `checkpatch.pl` on the agent's diff. That is a static
+check rather than boot evidence, so it is reported only — it fails a trial just
+when the task opts into a limit, and even then only by downgrading a `PASS`.
 
 Each run leaves its evidence under `runs/`: the agent's diff, the build log,
 the serial console, and `reward.json`.

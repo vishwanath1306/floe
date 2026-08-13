@@ -33,6 +33,8 @@ pub enum Outcome {
     FailHang,
     /// The kernel booted fine; the task's own check failed.
     FailTest,
+    /// Everything worked, but the task set a style limit the diff exceeded.
+    FailStyle,
 }
 
 impl Outcome {
@@ -47,7 +49,10 @@ impl Outcome {
     }
 
     pub fn booted(&self) -> bool {
-        matches!(self, Outcome::Pass | Outcome::FailTest | Outcome::FailOops)
+        matches!(
+            self,
+            Outcome::Pass | Outcome::FailTest | Outcome::FailOops | Outcome::FailStyle
+        )
     }
 }
 
@@ -152,6 +157,22 @@ pub fn grade(ev: Evidence<'_>) -> Verdict {
             Outcome::FailHang,
             "guest exited without reporting a result -- it never reached verify.sh".into(),
         ),
+    }
+}
+
+/// Apply a task's style limits on top of a functional verdict.
+///
+/// Only ever downgrades a PASS. Style is a static check on the diff, not
+/// evidence from a booted kernel, so it must not mask why a kernel panicked,
+/// hung or failed to build -- those are the more important findings.
+pub fn apply_style(verdict: Verdict, gate: &crate::style::StyleGate,
+                   report: &crate::style::StyleReport) -> Verdict {
+    if verdict.outcome != Outcome::Pass {
+        return verdict;
+    }
+    match gate.violation(report) {
+        Some(detail) => Verdict { outcome: Outcome::FailStyle, detail },
+        None => verdict,
     }
 }
 

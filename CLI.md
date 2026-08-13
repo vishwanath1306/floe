@@ -91,6 +91,7 @@ runs/<task>-<agent>-<epoch>/
   setup.log      only if the task has a setup patch/script
   build.log      kernel build output
   console.log    guest serial console -- what panics are graded from
+  checkpatch.log scripts/checkpatch.pl output for agent.diff
   verify.out     what verify.sh printed inside the guest
   workspace/     the worktree, only with --keep
 ```
@@ -109,6 +110,7 @@ runs/<task>-<agent>-<epoch>/
 | `FAIL_PANIC` | `Kernel panic - not syncing` on the console |
 | `FAIL_OOPS` | Oops, `BUG:`, or `WARNING: CPU:` on the console |
 | `FAIL_HANG` | Never finished, and printed no fault |
+| `FAIL_STYLE` | Booted and passed, but exceeded a style limit the task set |
 
 Console evidence outranks the guest's own result: a kernel that oopses but
 still passes `verify.sh` scores `FAIL_OOPS`, not `PASS`.
@@ -122,3 +124,24 @@ Per-task, set in `task.toml`, not on the command line:
 [build]    timeout_sec = 3600
 [verifier] timeout_sec = 300
 ```
+
+## Style
+
+Every run reports `scripts/checkpatch.pl` on the agent's diff, using the
+checker from the task's own tree. It is **reported only** unless the task opts
+into limits:
+
+```toml
+[style]
+max_errors = 0        # omit either key to leave it unlimited
+max_warnings = 5
+```
+
+A limit can only downgrade a `PASS` to `FAIL_STYLE`. It never masks a panic,
+hang or build failure -- those are the more important findings. A limit is also
+ignored when checkpatch could not run, so the agent is never failed for the
+harness's problem.
+
+checkpatch covers formatting, not linkage or scoping: a patch that leaks a
+global symbol still scores 0 errors. Requirements like that belong in the
+task's `instruction.md` and `verify.sh`.

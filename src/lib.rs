@@ -15,6 +15,7 @@
 
 pub mod grade;
 pub mod proc;
+pub mod style;
 pub mod task;
 pub mod trial;
 pub mod vmm;
@@ -72,6 +73,12 @@ mod python {
         d.set_item("detail", &result.detail)?;
         d.set_item("booted", result.booted)?;
         d.set_item("diff_stat", &result.diff_stat)?;
+        let style = PyDict::new(py);
+        style.set_item("ran", result.style.ran)?;
+        style.set_item("errors", result.style.errors)?;
+        style.set_item("warnings", result.style.warnings)?;
+        style.set_item("skipped", result.style.skipped.clone())?;
+        d.set_item("style", style)?;
         d.set_item("agent_secs", result.agent_secs)?;
         d.set_item("build_secs", result.build_secs)?;
         d.set_item("boot_secs", result.boot_secs)?;

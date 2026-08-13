@@ -15,6 +15,7 @@ import floe
 GLYPH = {
     "PASS": "PASS   ",
     "FAILTEST": "FAIL   ",
+    "FAILSTYLE": "STYLE  ",
     "FAILBUILD": "BUILD  ",
     "FAILBUILDTIMEOUT": "BUILD !",
     "FAILNOIMAGE": "NOIMAGE",
@@ -35,6 +36,11 @@ def _report(result: dict) -> None:
         "  timing    agent {agent_secs:.0f}s  build {build_secs:.0f}s  "
         "boot {boot_secs:.0f}s".format(**result)
     )
+    st = result.get("style") or {}
+    if st.get("ran"):
+        print(f"  style     checkpatch: {st['errors']} errors, {st['warnings']} warnings")
+    elif st.get("skipped"):
+        print(f"  style     not checked ({st['skipped']})")
     print(f"  evidence  {result['run_dir']}")
 
 

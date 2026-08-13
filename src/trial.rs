@@ -58,6 +58,9 @@ pub struct TrialResult {
     pub booted: bool,
     /// Empty when the agent made no changes -- worth surfacing on its own.
     pub diff_stat: String,
+    /// checkpatch on the agent's diff. Reported always; only fails a trial if
+    /// the task opted into limits via [style] in task.toml.
+    pub style: crate::style::StyleReport,
     /// What verify.sh printed inside the guest.
     pub verify_output: String,
     pub agent_secs: f64,
@@ -123,6 +126,11 @@ pub fn run_trial(task_dir: &Path, agent: Agent, cfg: &Config) -> Result<TrialRes
     let diff = ws.diff();
     std::fs::write(run_dir.join("agent.diff"), &diff)?;
     let diff_stat = summarize_diff(&diff);
+    let style = crate::style::check(
+        &ws.path,
+        &run_dir.join("agent.diff"),
+        &run_dir.join("checkpatch.log"),
+    );
 
     // --- build phase -----------------------------------------------------
     let build = vmm.build(&task, &ws.path, &run_dir)?;
@@ -156,13 +164,17 @@ pub fn run_trial(task_dir: &Path, agent: Agent, cfg: &Config) -> Result<TrialRes
         std::fs::write(run_dir.join("verify.out"), &guest_output)?;
     }
 
-    let verdict = grade::grade(Evidence {
+    let verdict = grade::apply_style(
+        grade::grade(Evidence {
         build: &build.step.exit,
         image_present: build.image.is_some(),
         boot: boot_exit.as_ref(),
         guest_exit,
         console: &console,
-    });
+        }),
+        &task.style,
+        &style,
+    );
 
     let result = TrialResult {
         task: task.meta.name.clone(),
@@ -174,6 +186,7 @@ pub fn run_trial(task_dir: &Path, agent: Agent, cfg: &Config) -> Result<TrialRes
         detail: verdict.detail,
         verify_output: guest_output.trim().to_string(),
         diff_stat,
+        style,
         agent_secs,
         build_secs,
         boot_secs,

@@ -67,6 +67,8 @@ struct RawTask {
     task: TaskMeta,
     #[serde(default)]
     kernel: KernelSpec,
+    #[serde(default)]
+    style: crate::style::StyleGate,
     build: Option<Timeout>,
     agent: Option<Timeout>,
     verifier: Option<Timeout>,
@@ -118,6 +120,8 @@ pub struct Task {
     pub agent_timeout_sec: u64,
     pub verify_timeout_sec: u64,
     pub instruction: String,
+    /// Absent limits mean checkpatch is reported but never fails a trial.
+    pub style: crate::style::StyleGate,
 }
 
 impl Task {
@@ -144,6 +148,7 @@ impl Task {
             agent_timeout_sec: raw.agent.map(|t| t.timeout_sec).unwrap_or(1800),
             verify_timeout_sec: raw.verifier.map(|t| t.timeout_sec).unwrap_or(300),
             instruction,
+            style: raw.style,
             dir,
         })
     }
