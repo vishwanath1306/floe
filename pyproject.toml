@@ -7,7 +7,11 @@ name = "floe"
 version = "0.1.0"
 description = "VM-backed harness for Linux kernel agent tasks (virtme-ng + Claude)"
 requires-python = ">=3.9"
-classifiers = ["Programming Language :: Rust"]
+license = { text = "MIT" }
+classifiers = [
+    "Programming Language :: Rust",
+    "License :: OSI Approved :: MIT License",
+]
 
 [project.scripts]
 floe = "floe.cli:main"
